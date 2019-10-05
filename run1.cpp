@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <set>
 #include <sstream>
+#include <fstream>
 using namespace std;
 
 
@@ -89,7 +90,7 @@ int main(){
 
     }
 
-    vector<vector<bool>>mapping;
+    vector<vector<bool>>mapping;//mapping   (nodes of Gs) X (nodes of Gl) -> Boolean -> false if mapping is possible. true if possible (need not exist)
     vector<string> output_strings;
 
     int rows = Gs.nodes.size();
@@ -103,7 +104,7 @@ int main(){
 
             if(z==false){  
                 stringstream ss;
-                ss << "-"<< i*cols + j + 1<<" 0\n";
+                ss << "-"<< i*cols + j + 1<<" 0\n";// to clear out the cases in which indegree and out dgree do not match
                 output_strings.push_back(ss.str());
     
             }
@@ -111,11 +112,33 @@ int main(){
         mapping.push_back(temp);
     }
     
+    for(int i =0 ;i<Gs.nodes.size();i++){//to ensure one to one mapping
+        for(int j = 0;j<Gl.nodes.size();j++){
+            for(int k = j+1;k<Gl.nodes.size();k++){
+                stringstream ss;
+                ss<<"-"<<i*cols + j + 1 <<" -"<<i*cols + k + 1 <<" 0\n";
+                output_strings.push_back(ss.str());
+            }
+        }
+
+    }
+
+    for(int i = 0;i<Gs.nodes.size();i++){
+        stringstream ss;// to ensure that atleast one mapping exists 
+        for(int j =0;j<Gl.nodes.size();j++){
+            ss<< i*cols + j + 1 <<" ";
+        }
+        ss<<"0\n";
+        output_strings.push_back(ss.str());
+    }
 
     for(int i = 0;i<Gs.nodes.size();i++){
         for(int j = 0;j<Gl.nodes.size();j++){
-            //
-            if(mapping[i][j]==true){
+            //to code for solution   (x[i][j] ^ e[i][p] ^ ~e[j][q] ) -> ~x[p][q]
+            //                       (x[i][j] ^ ~e[i][p] ^ e[j][q] ) -> ~x[p][q]
+            //                       (x[i][j] ^ ~e[i][p] ^ ~e[j][q] ) -> ~x[p][q]
+            
+            if(mapping[i][j]==true){//look at cases only where mapping is possible
                 for(int p = 0; p < Gs.nodes[i]->neighbours.size();p++){
                     bool edge_i_p = false;
                     if(!(Gs.nodes[i]->neighbour_map.find(Gs.nodes[p]->id) == Gs.nodes[i]->neighbour_map.end())){
@@ -130,9 +153,9 @@ int main(){
                         }
 
                         if( i==p && j == q)continue;
-
-                        if(  !edge_i_p && !edge_j_q)continue;
-
+                        
+                        
+                        if( edge_i_p && edge_j_q)continue;//since x[i][j] ^ e[i][p] ^ e[j][q] does not imply x[p][q]
                         stringstream ss;
                         ss<< "-"<< i * cols + j + 1<<" -"<< p*cols + q + 1<<" 0\n";
                         output_strings.push_back(ss.str());
@@ -149,6 +172,10 @@ int main(){
 
     for(int i =0 ;i<output_strings.size();i++)cout<<output_strings[i];
 
-
+    ofstream dimensionFile ;
+    dimensionFile.open("Dimensions.txt");
+    dimensionFile<<rows<<endl;
+    dimensionFile<<cols;
+    dimensionFile.close();
     return 0;
 }

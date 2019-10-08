@@ -55,6 +55,8 @@ int main(){
     Graph Gl,Gs;
     Gl.nodes.clear();
     Gs.nodes.clear();
+    int l_max=-1;
+    int s_max=-1;
     while(getline(cin,line)){
         
         string first;
@@ -75,19 +77,33 @@ int main(){
         int x,y;
         x = stoi(first);
         y = stoi(second);
-
+        
         if(x==y && x==0){
             isG_l = false;
             continue;
         }
         if(isG_l){
             Gl.addEdge(x,y);
-            
+            if(x>l_max)l_max=x;
+            if(y>l_max)l_max = y;
         }
         else{
+            if(x>s_max)s_max = x;
+            if(y>s_max)s_max = y;
             Gs.addEdge(x,y);
         }    
 
+    }
+    for(int i = 1;i<=l_max;i++){
+        if(Gl.node_map.find(i) == Gl.node_map.end()){
+            Gl.addNode(i);
+        }
+
+    }
+    for(int i = 1;i<=s_max;i++){
+        if(Gs.node_map.find(i) == Gl.node_map.end()){
+            Gs.addNode(i);
+        }
     }
 
     vector<vector<bool>>mapping;//mapping   (nodes of Gs) X (nodes of Gl) -> Boolean -> false if mapping is possible. true if possible (need not exist)

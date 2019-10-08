@@ -31,7 +31,11 @@ class Graph{
         Node* node = new Node();
         node->id = id;
         node->neighbours.clear();
+        
+        
         node_map[id] = node;
+        nodes.push_back(node);
+    
     }
 
     void addEdge(int x,int y){
@@ -105,6 +109,10 @@ int main(){
             Gs.addNode(i);
         }
     }
+    
+    // cout<<"Large Graph  has atleast "<<Gs.nodes.size()<<" Nodes"<<endl;
+    // cout<<"Small Graph  has atleast "<<Gs.nodes.size()<<" Nodes"<<endl;
+
 
     vector<vector<bool>>mapping;//mapping   (nodes of Gs) X (nodes of Gl) -> Boolean -> false if mapping is possible. true if possible (need not exist)
     vector<string> output_strings;
@@ -183,10 +191,11 @@ int main(){
         }
     }
     int numVariables = cols * rows;
+    ofstream satInputFile;
+    satInputFile.open("test.satinput");
+    satInputFile<<"p cnf "<<numVariables<<" "<<output_strings.size()<<endl;
 
-    cout<<"p cnf "<<numVariables<<" "<<output_strings.size();
-
-    for(int i =0 ;i<output_strings.size();i++)cout<<output_strings[i];
+    for(int i =0 ;i<output_strings.size();i++)satInputFile<<output_strings[i];
 
     ofstream dimensionFile ;
     dimensionFile.open("Dimensions.txt");

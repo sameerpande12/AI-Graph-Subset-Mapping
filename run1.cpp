@@ -155,41 +155,42 @@ int main(){
         ss<<"0\n";
         output_strings.push_back(ss.str());
     }
-//ERROR in this part
-    // for(int i = 0;i<Gs.nodes.size();i++){
-    //     for(int j = 0;j<Gl.nodes.size();j++){
-    //         //to code for solution   (x[i][j] ^ e[i][p] ^ ~e[j][q] ) -> ~x[p][q]
-    //         //                       (x[i][j] ^ ~e[i][p] ^ e[j][q] ) -> ~x[p][q]
-    //         //                       (x[i][j] ^ ~e[i][p] ^ ~e[j][q] ) -> ~x[p][q]
+// ERROR in this part
+    for(int i = 0;i<Gs.nodes.size();i++){
+        for(int j = 0;j<Gl.nodes.size();j++){
+            //to code for solution   (x[i][j] ^ e[i][p] ^ ~e[j][q] ) -> ~x[p][q]
+            //                       (x[i][j] ^ ~e[i][p] ^ e[j][q] ) -> ~x[p][q]
+            //                       (x[i][j] ^ ~e[i][p] ^ ~e[j][q] ) -> ~x[p][q] -->WRONG
             
-    //         if(mapping[i][j]==true){//look at cases only where mapping is possible
-    //             for(int p = 0; p < Gs.nodes[i]->neighbours.size();p++){
-    //                 bool edge_i_p = false;
-    //                 if(!(Gs.nodes[i]->neighbour_map.find(Gs.nodes[p]->id) == Gs.nodes[i]->neighbour_map.end())){
-    //                     edge_i_p = true;
-    //                 }
+            if(mapping[i][j]==true){//look at cases only where mapping is possible
+                for(int p = 0; p < Gs.nodes[i]->neighbours.size();p++){
+                    bool edge_i_p = false;
+                    if(!(Gs.nodes[i]->neighbour_map.find(Gs.nodes[p]->id) == Gs.nodes[i]->neighbour_map.end())){
+                        edge_i_p = true;
+                    }
 
-    //                 for(int q  = 0;q<Gl.nodes[j]->neighbours.size();q++){
-    //                     bool edge_j_q = false;
+                    for(int q  = 0;q<Gl.nodes[j]->neighbours.size();q++){
+                        bool edge_j_q = false;
 
-    //                     if(!(Gl.nodes[j]->neighbour_map.find(Gl.nodes[q]->id)== Gl.nodes[j]->neighbour_map.end())){
-    //                         edge_j_q = true;
-    //                     }
+                        if(!(Gl.nodes[j]->neighbour_map.find(Gl.nodes[q]->id)== Gl.nodes[j]->neighbour_map.end())){
+                            edge_j_q = true;
+                        }
 
-    //                     if( i==p && j == q)continue;
+                        if( i==p && j == q)continue;
                         
                         
-    //                     if( edge_i_p && edge_j_q)continue;//since x[i][j] ^ e[i][p] ^ e[j][q] does not imply x[p][q]
-    //                     stringstream ss;
-    //                     ss<< "-"<< i * cols + j + 1<<" -"<< p*cols + q + 1<<" 0\n";
-    //                     output_strings.push_back(ss.str());
-    //                 }
-    //             }
+                        if( edge_i_p && edge_j_q)continue;//since x[i][j] ^ e[i][p] ^ e[j][q] does not imply x[p][q]
+                        if( !(edge_i_p && edge_j_q))continue;
+                        stringstream ss;
+                        ss<< "-"<< i * cols + j + 1<<" -"<< p*cols + q + 1<<" 0\n";
+                        output_strings.push_back(ss.str());
+                    }
+                }
 
-    //         }
+            }
 
-    //     }
-    // }
+        }
+    }
     int numVariables = cols * rows;
     ofstream satInputFile;
     satInputFile.open("test.satinput");

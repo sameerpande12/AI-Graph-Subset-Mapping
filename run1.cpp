@@ -166,6 +166,7 @@ int main(){
     vector<vector<bool>>mapping;//mapping   (nodes of Gs) X (nodes of Gl) -> Boolean -> false if mapping is possible. true if possible (need not exist)
     vector<string> output_strings;
 
+    // cout<<Gs.checkGraph()<<" "<<Gl.checkGraph()<<endl;
     int rows = Gs.nodes.size();
     int cols = Gl.nodes.size();
     
@@ -177,7 +178,7 @@ int main(){
 
             if(z==false){  
                 stringstream ss;
-                ss << "-"<< i*cols + j + 1<<" 0\n";// to clear out the cases in which indegree and out dgree do not match
+                ss << "-"<< (Gs.nodes[i]->id - 1)*cols + (Gl.nodes[j]->id - 1) + 1<<" 0\n";// to clear out the cases in which indegree and out dgree do not match
                 output_strings.push_back(ss.str());
     
             }
@@ -189,7 +190,7 @@ int main(){
         for(int j = 0;j<Gl.nodes.size();j++){
             for(int k = j+1;k<Gl.nodes.size();k++){
                 stringstream ss;
-                ss<<"-"<<i*cols + j + 1 <<" -"<<i*cols + k + 1 <<" 0\n";
+                ss<<"-"<<  (Gs.nodes[i]->id - 1)*cols + (Gl.nodes[j]->id - 1) + 1 <<" -"<<  (Gs.nodes[i]->id - 1)*cols + (Gl.nodes[k]->id - 1) + 1 <<" 0\n";
                 output_strings.push_back(ss.str());
             }
         }
@@ -199,7 +200,7 @@ int main(){
     for(int i = 0;i<Gs.nodes.size();i++){
         stringstream ss;// to ensure that atleast one mapping exists 
         for(int j =0;j<Gl.nodes.size();j++){
-            ss<< i*cols + j + 1 <<" ";
+            ss<< (Gs.nodes[i]->id - 1)*cols + (Gl.nodes[j]->id-1) + 1 <<" ";
         }
         ss<<"0\n";
         output_strings.push_back(ss.str());
@@ -209,7 +210,7 @@ int main(){
         for(int i = 0;i<Gs.nodes.size();i++){//to ensure no to nodes map to same element
             for(int k = i+1;k<Gs.nodes.size();k++){
                 stringstream ss;
-                ss<<"-"<<i*cols + j + 1<<" -"<<k*cols + j + 1 <<" 0\n";
+                ss<<"-"<<(Gs.nodes[i]->id - 1)*cols + (Gl.nodes[j]->id -1 ) + 1<<" -"<<(Gs.nodes[k]->id - 1)*cols + (Gl.nodes[j]->id -1 ) + 1 <<" 0\n";
                 output_strings.push_back(ss.str());
             }
         }
@@ -223,11 +224,12 @@ int main(){
     for(int i = 0;i<Gs.nodes.size();i++){
         for(int j = 0;j<Gl.nodes.size();j++){
             for(int p = 0;p<Gs.nodes.size();p++){
+                if(i==p)continue;
                 bool edge_i_p = false;
                 if(!(Gs.nodes[i]->neighbour_map.find(Gs.nodes[p]->id) == Gs.nodes[i]->neighbour_map.end()))
                     edge_i_p = true;
                 
-                if(edge_i_p){
+                if(edge_i_p){//e[i][p] is true
                     for(int q = 0;q<Gl.nodes.size();q++){
                         bool edge_j_q = false;
                         if(!(Gl.nodes[j]->neighbour_map.find(Gl.nodes[q]->id)== Gl.nodes[j]->neighbour_map.end()))
@@ -235,7 +237,7 @@ int main(){
                         
                         if(edge_i_p && !edge_j_q){
                             stringstream ss;
-                            ss<< "-"<< i * cols + j + 1<<" -"<< p*cols + q + 1<<" 0\n";
+                            ss<< "-"<< (Gs.nodes[i]->id - 1)* cols +  (Gl.nodes[j]->id -1) + 1<<" -"<<  (Gs.nodes[p]->id - 1) *cols + (Gl.nodes[q]->id -1) + 1<<" 0\n";
                             output_strings.push_back(ss.str());
                         }
                         
@@ -243,14 +245,16 @@ int main(){
                     }
                 }
                 else{// x[i][j] ^ ~e[i][p] ^ e[j][q]
-                    for(int q = 0;q<Gl.nodes[j]->neighbours.size();q++){
+                    for(int Q = 0;Q<Gl.nodes[j]->neighbours.size();Q++){
+                        int q = Gl.nodes[j]->neighbours[Q]->id;
                         bool edge_j_q = false;
-                        if(!(Gl.nodes[j]->neighbour_map.find(Gl.nodes[j]->neighbours[q]->id)== Gl.nodes[j]->neighbour_map.end()))
+                        if(!(Gl.nodes[j]->neighbour_map.find(q)==Gl.nodes[j]->neighbour_map.end())){
                             edge_j_q = true;
+                        }
 
                         if(edge_j_q){
                             stringstream ss;
-                            ss<< "-"<< i * cols + j + 1<<" -"<< p*cols + Gl.nodes[j]->neighbours[q]->id + 1<<" 0\n";
+                            ss<< "-"<< (Gs.nodes[i]->id - 1)* cols +  (Gl.nodes[j]->id -1) + 1<<" -"<<  (Gs.nodes[p]->id - 1) *cols + (q-1) + 1<<" 0\n";// (q-1) used plainly since q is already the id
                             output_strings.push_back(ss.str());
                             // cout<<"i"<<endl;
                         }

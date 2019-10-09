@@ -1,2 +1,2 @@
-g++ run1.cpp -o run1
-g++ run2.cpp -o run2
+g++ -std=c++0x run1.cpp -o run1
+g++ -std=c++0x run2.cpp -o run2

@@ -70,7 +70,7 @@ class Graph{
     }
 };
 
-int main(){
+int main(int argc, char** argv){
     string line;
     bool isG_l = true;
     Graph Gl,Gs;
@@ -165,11 +165,14 @@ int main(){
 
     vector<vector<bool>>mapping;//mapping   (nodes of Gs) X (nodes of Gl) -> Boolean -> false if mapping is possible. true if possible (need not exist)
     vector<string> output_strings;
-
+    long long int clauseCount = 0;
     // cout<<Gs.checkGraph()<<" "<<Gl.checkGraph()<<endl;
     int rows = Gs.nodes.size();
     int cols = Gl.nodes.size();
-    
+    ofstream satInputFile;
+    string mode(argv[1]);
+    satInputFile.open(mode+".satinput");
+
     for(int i =0 ;i<Gs.nodes.size();i++){
         vector<bool> temp;
         for(int j =0 ; j<Gl.nodes.size();j++){
@@ -179,7 +182,9 @@ int main(){
             if(z==false){  
                 stringstream ss;
                 ss << "-"<< (Gs.nodes[i]->id - 1)*cols + (Gl.nodes[j]->id - 1) + 1<<" 0\n";// to clear out the cases in which indegree and out dgree do not match
-                output_strings.push_back(ss.str());
+                // output_strings.push_back(ss.str());
+                satInputFile<<ss.str();
+                clauseCount++;
     
             }
         }
@@ -191,7 +196,9 @@ int main(){
             for(int k = j+1;k<Gl.nodes.size();k++){
                 stringstream ss;
                 ss<<"-"<<  (Gs.nodes[i]->id - 1)*cols + (Gl.nodes[j]->id - 1) + 1 <<" -"<<  (Gs.nodes[i]->id - 1)*cols + (Gl.nodes[k]->id - 1) + 1 <<" 0\n";
-                output_strings.push_back(ss.str());
+                // output_strings.push_back(ss.str());
+                satInputFile<<ss.str();
+                clauseCount++;
             }
         }
 
@@ -203,7 +210,9 @@ int main(){
             ss<< (Gs.nodes[i]->id - 1)*cols + (Gl.nodes[j]->id-1) + 1 <<" ";
         }
         ss<<"0\n";
-        output_strings.push_back(ss.str());
+        // output_strings.push_back(ss.str());
+        satInputFile<<ss.str();
+        clauseCount++;
     }
 
     for(int j = 0;j<Gl.nodes.size();j++){
@@ -211,7 +220,9 @@ int main(){
             for(int k = i+1;k<Gs.nodes.size();k++){
                 stringstream ss;
                 ss<<"-"<<(Gs.nodes[i]->id - 1)*cols + (Gl.nodes[j]->id -1 ) + 1<<" -"<<(Gs.nodes[k]->id - 1)*cols + (Gl.nodes[j]->id -1 ) + 1 <<" 0\n";
-                output_strings.push_back(ss.str());
+                // output_strings.push_back(ss.str());
+                satInputFile<<ss.str();
+                clauseCount++;
             }
         }
     }
@@ -238,7 +249,9 @@ int main(){
                         if(edge_i_p && !edge_j_q){
                             stringstream ss;
                             ss<< "-"<< (Gs.nodes[i]->id - 1)* cols +  (Gl.nodes[j]->id -1) + 1<<" -"<<  (Gs.nodes[p]->id - 1) *cols + (Gl.nodes[q]->id -1) + 1<<" 0\n";
-                            output_strings.push_back(ss.str());
+                            // output_strings.push_back(ss.str());
+                            satInputFile<<ss.str();
+                            clauseCount++;
                         }
                         
 
@@ -255,8 +268,9 @@ int main(){
                         if(edge_j_q){
                             stringstream ss;
                             ss<< "-"<< (Gs.nodes[i]->id - 1)* cols +  (Gl.nodes[j]->id -1) + 1<<" -"<<  (Gs.nodes[p]->id - 1) *cols + (q-1) + 1<<" 0\n";// (q-1) used plainly since q is already the id
-                            output_strings.push_back(ss.str());
-                            // cout<<"i"<<endl;
+                            // output_strings.push_back(ss.str());
+                            satInputFile<<ss.str();
+                            clauseCount++;
                         }
                     }
                 }
@@ -267,15 +281,19 @@ int main(){
 
         }
     }
+    satInputFile.close();
     int numVariables = cols * rows;
-    ofstream satInputFile;
-    satInputFile.open("test.satinput");
-    satInputFile<<"p cnf "<<numVariables<<" "<<output_strings.size()<<endl;
+    ofstream satheaderfile;
+    satheaderfile.open("header_"+mode+".txt");
+    satheaderfile<<"p cnf "<<numVariables<<" "<<clauseCount<<endl;
+    satheaderfile.close();
+    
+    // satInputFile<<"p cnf "<<numVariables<<" "<<output_strings.size()<<endl;
 
     for(int i =0 ;i<output_strings.size();i++)satInputFile<<output_strings[i];
 
     ofstream dimensionFile ;
-    dimensionFile.open("Dimensions.txt");
+    dimensionFile.open("Dimensions_"+mode+".txt");
     dimensionFile<<rows<<endl;
     dimensionFile<<cols;
     dimensionFile.close();

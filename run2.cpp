@@ -2,10 +2,10 @@
 #include<fstream>
 #include <vector>
 using namespace std;
-int main(){
-
+int main(int argc, char**argv){
+    string mode(argv[1]);
     ifstream readDimension;
-    readDimension.open("Dimensions.txt");
+    readDimension.open("Dimensions_"+mode+".txt");
 
     int rows;
     int cols;
@@ -19,17 +19,21 @@ int main(){
     }
     string result;
     cin>>result;
-    
-    for(int i =0 ;i<cols*rows+1;i++){
-        int x;
-        cin>>x;
-        if(x>0){
-            int row_num = (x-1)/cols;
-            int col_num = (x-1)%cols;
-            cout<<row_num + 1 << " "<<col_num + 1<<endl;
+    if(!(result.compare("UNSAT")==0)){
+        for(int i =0 ;i<cols*rows+1;i++){
+            int x;
+            cin>>x;
+            if(x>0){
+                int row_num = (x-1)/cols;
+                int col_num = (x-1)%cols;
+                cout<<row_num + 1 << " "<<col_num + 1<<endl;
+            }
         }
     }
-    
+    else{
+        cout<<0;
+    }
+    return 0;
     // if(!(result.compare("UNSAT")==0)){
         
     //     string values;

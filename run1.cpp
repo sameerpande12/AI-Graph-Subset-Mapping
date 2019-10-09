@@ -285,7 +285,7 @@ int main(int argc, char** argv){
     satInputFile.close();
     int numVariables = cols * rows;
     ofstream satheaderfile;
-    satheaderfile.open("header_"+mode+".txt");
+    satheaderfile.open("header.txt");
     satheaderfile<<"p cnf "<<numVariables<<" "<<clauseCount<<endl;
     satheaderfile.close();
     
@@ -294,7 +294,7 @@ int main(int argc, char** argv){
     for(int i =0 ;i<output_strings.size();i++)satInputFile<<output_strings[i];
 
     ofstream dimensionFile ;
-    dimensionFile.open("Dimensions_"+mode+".txt");
+    dimensionFile.open("Dimensions.txt");
     dimensionFile<<rows<<endl;
     dimensionFile<<cols;
     dimensionFile.close();

@@ -3,9 +3,9 @@
 #include <vector>
 using namespace std;
 int main(int argc, char**argv){
-    string mode(argv[1]);
+    // string mode(argv[1]);
     ifstream readDimension;
-    readDimension.open("Dimensions_"+mode+".txt");
+    readDimension.open("Dimensions.txt");
 
     int rows;
     int cols;

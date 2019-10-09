@@ -14,6 +14,11 @@ class Node{
         int indegree;
         int outdegree;
         int id;
+    Node(){
+        indegree = 0;
+        outdegree = 0;
+        neighbours.clear();
+    }
 };
 
 
@@ -50,6 +55,18 @@ class Graph{
         xNode->outdegree = xNode->outdegree + 1;
         yNode->indegree = yNode->indegree + 1;
         
+    }
+
+    bool checkGraph(){
+        for(int i =0 ;i<nodes.size();i++){
+            if (!(nodes[i]->neighbours.size() == nodes[i]->neighbour_map.size())){
+                return false;
+            }
+            for(int j = 0;j<nodes[i]->neighbours.size();j++){
+                if( nodes[i]->neighbour_map.find(nodes[i]->neighbours[j]->id) == nodes[i]->neighbour_map.end())return false;
+            }
+        }
+        return true;
     }
 };
 
@@ -109,10 +126,42 @@ int main(){
             Gs.addNode(i);
         }
     }
-    
+
     // cout<<"Large Graph  has atleast "<<Gs.nodes.size()<<" Nodes"<<endl;
     // cout<<"Small Graph  has atleast "<<Gs.nodes.size()<<" Nodes"<<endl;
 
+    // for (int i = 0;i<Gs.nodes.size();i++){
+    //     cout<<Gs.nodes[i]->id<<" :-";
+    //     for(int j = 0;j<Gs.nodes[i]->neighbours.size();j++){
+    //         cout<<Gs.nodes[i]->neighbours[j]->id<<" ";
+    //     }
+    //     cout<<endl;
+    // }
+
+    // cout<<"-----"<<endl<<endl;
+    // for (int i = 0;i<Gl.nodes.size();i++){
+    //     cout<<Gl.nodes[i]->id<<" :-";
+    //     for(int j = 0;j<Gl.nodes[i]->neighbours.size();j++){
+    //         cout<<Gl.nodes[i]->neighbours[j]->id<<" ";
+    //     }
+    //     cout<<endl;
+    // }
+    // cout<<"-----"<<endl<<endl;
+
+    // cout<<"Gs"<<endl;
+    // for (int i = 0;i<Gs.nodes.size();i++){
+    //     cout<<Gs.nodes[i]->id<<" :- indegree = "<<Gs.nodes[i]->indegree<<" outdegree = "<<Gs.nodes[i]->outdegree<<endl;
+        
+        
+    // }
+
+    // cout<<"-----"<<endl<<endl;
+    // cout<<"Gl"<<endl;
+    // for (int i = 0;i<Gl.nodes.size();i++){
+    //     cout<<Gl.nodes[i]->id<<" :- indegree = "<<Gl.nodes[i]->indegree<<" outdegree = "<<Gl.nodes[i]->outdegree<<endl;
+        
+        
+    // }
 
     vector<vector<bool>>mapping;//mapping   (nodes of Gs) X (nodes of Gl) -> Boolean -> false if mapping is possible. true if possible (need not exist)
     vector<string> output_strings;
@@ -123,7 +172,7 @@ int main(){
     for(int i =0 ;i<Gs.nodes.size();i++){
         vector<bool> temp;
         for(int j =0 ; j<Gl.nodes.size();j++){
-            bool z = (Gs.nodes[i]->indegree == Gl.nodes[j]->indegree) && (Gs.nodes[i]->outdegree == Gl.nodes[j]->outdegree);
+            bool z = (Gs.nodes[i]->indegree <= Gl.nodes[j]->indegree) && (Gs.nodes[i]->outdegree <= Gl.nodes[j]->outdegree);
             temp.push_back(z);
 
             if(z==false){  
@@ -155,39 +204,62 @@ int main(){
         ss<<"0\n";
         output_strings.push_back(ss.str());
     }
-// ERROR in this part
+
+    for(int j = 0;j<Gl.nodes.size();j++){
+        for(int i = 0;i<Gs.nodes.size();i++){//to ensure no to nodes map to same element
+            for(int k = i+1;k<Gs.nodes.size();k++){
+                stringstream ss;
+                ss<<"-"<<i*cols + j + 1<<" -"<<k*cols + j + 1 <<" 0\n";
+                output_strings.push_back(ss.str());
+            }
+        }
+    }
+
+
+    //to code for solution   (x[i][j] ^ e[i][p] ^ ~e[j][q] ) -> ~x[p][q]
+    //                       (x[i][j] ^ ~e[i][p] ^ e[j][q] ) -> ~x[p][q]
+
+            
     for(int i = 0;i<Gs.nodes.size();i++){
         for(int j = 0;j<Gl.nodes.size();j++){
-            //to code for solution   (x[i][j] ^ e[i][p] ^ ~e[j][q] ) -> ~x[p][q]
-            //                       (x[i][j] ^ ~e[i][p] ^ e[j][q] ) -> ~x[p][q]
-            //                       (x[i][j] ^ ~e[i][p] ^ ~e[j][q] ) -> ~x[p][q] -->WRONG
-            
-            if(mapping[i][j]==true){//look at cases only where mapping is possible
-                for(int p = 0; p < Gs.nodes[i]->neighbours.size();p++){
-                    bool edge_i_p = false;
-                    if(!(Gs.nodes[i]->neighbour_map.find(Gs.nodes[p]->id) == Gs.nodes[i]->neighbour_map.end())){
-                        edge_i_p = true;
-                    }
-
-                    for(int q  = 0;q<Gl.nodes[j]->neighbours.size();q++){
+            for(int p = 0;p<Gs.nodes.size();p++){
+                bool edge_i_p = false;
+                if(!(Gs.nodes[i]->neighbour_map.find(Gs.nodes[p]->id) == Gs.nodes[i]->neighbour_map.end()))
+                    edge_i_p = true;
+                
+                if(edge_i_p){
+                    for(int q = 0;q<Gl.nodes.size();q++){
                         bool edge_j_q = false;
-
-                        if(!(Gl.nodes[j]->neighbour_map.find(Gl.nodes[q]->id)== Gl.nodes[j]->neighbour_map.end())){
+                        if(!(Gl.nodes[j]->neighbour_map.find(Gl.nodes[q]->id)== Gl.nodes[j]->neighbour_map.end()))
                             edge_j_q = true;
+                        
+                        if(edge_i_p && !edge_j_q){
+                            stringstream ss;
+                            ss<< "-"<< i * cols + j + 1<<" -"<< p*cols + q + 1<<" 0\n";
+                            output_strings.push_back(ss.str());
                         }
+                        
 
-                        if( i==p && j == q)continue;
-                        
-                        
-                        if( edge_i_p && edge_j_q)continue;//since x[i][j] ^ e[i][p] ^ e[j][q] does not imply x[p][q]
-                        if( !(edge_i_p && edge_j_q))continue;
-                        stringstream ss;
-                        ss<< "-"<< i * cols + j + 1<<" -"<< p*cols + q + 1<<" 0\n";
-                        output_strings.push_back(ss.str());
                     }
                 }
+                else{// x[i][j] ^ ~e[i][p] ^ e[j][q]
+                    for(int q = 0;q<Gl.nodes[j]->neighbours.size();q++){
+                        bool edge_j_q = false;
+                        if(!(Gl.nodes[j]->neighbour_map.find(Gl.nodes[j]->neighbours[q]->id)== Gl.nodes[j]->neighbour_map.end()))
+                            edge_j_q = true;
 
+                        if(edge_j_q){
+                            stringstream ss;
+                            ss<< "-"<< i * cols + j + 1<<" -"<< p*cols + Gl.nodes[j]->neighbours[q]->id + 1<<" 0\n";
+                            output_strings.push_back(ss.str());
+                            // cout<<"i"<<endl;
+                        }
+                    }
+                }
             }
+
+
+            
 
         }
     }

@@ -14,41 +14,29 @@ int main(){
     while(!readDimension.eof()){
         string temp;
         readDimension>>temp;
-        if(count==0)rows = stoi(temp);
+        if(count==0){rows = stoi(temp); count = count + 1;}
         else if(count==1)cols = stoi(temp);
     }
-
     string result;
     cin>>result;
-
-    if(!(result.compare("UNSAT")==0)){
-        
-        string values ;
-        cin>>values;
-
-        string temp= "";
-        bool sign = true;
-        for(int i = 0;i<values.size();i++){
-
-            if(values[i]==' '){
-                if(sign==true){
-                    int pos = stoi(temp);
-                    int row_num = (pos-1)/cols;
-                    int col_num = (pos-1)%cols;
-
-                    cout<< ( row_num + 1 ) <<" "<<(col_num + 1) <<endl;
-                }
-                    sign = true;
-                    temp = "";
-            }
-            else if(values[i]=='-'){
-                sign = false;
-                temp = "";
-            }
-            else temp = temp + values[i];
+    
+    for(int i =0 ;i<cols*rows+1;i++){
+        int x;
+        cin>>x;
+        if(x>0){
+            int row_num = (x-1)/cols;
+            int col_num = (x-1)%cols;
+            cout<<row_num + 1 << " "<<col_num + 1<<endl;
         }
-        
     }
-    else cout<<0<<endl;
+    
+    // if(!(result.compare("UNSAT")==0)){
+        
+    //     string values;
+
+
+        
+    // }
+    // else cout<<0<<endl;
     
 }

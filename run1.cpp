@@ -228,6 +228,31 @@ int main(int argc, char** argv){
         }
     }
 
+    vector<int> Gs_isolated_nodes;
+    for(int i = 0 ;i<Gs.nodes.size();i++){
+        if(Gs.nodes[i]->indegree == 0 && Gs.nodes[i]->outdegree == 0){
+            Gs_isolated_nodes.push_back(i);
+        }
+    }
+    vector<int> Gl_non_isolated_nodes;
+    for(int i = 0 ;i<Gl.nodes.size();i++){
+        if(!(Gl.nodes[i]->indegree == 0 && Gl.nodes[i]->outdegree == 0)){
+            Gl_non_isolated_nodes.push_back(i);
+        }
+    }
+    
+
+    for(int i = 0;i<Gs_isolated_nodes.size();i++){
+        for(int j = 0;j<Gl_non_isolated_nodes.size();j++){
+
+            stringstream ss;
+            ss<<"-"<< (Gs.nodes[Gs_isolated_nodes[i]]->id - 1)*cols + (Gl.nodes[Gl_non_isolated_nodes[j]]->id - 1) + 1 <<" 0\n";
+            //output_strings.push_back(ss.str());
+            satInputFile<<ss.str();
+            clauseCount++;
+        }
+    }
+
 
     //to code for solution   (x[i][j] ^ e[i][p] ^ ~e[j][q] ) -> ~x[p][q]
     //                       (x[i][j] ^ ~e[i][p] ^ e[j][q] ) -> ~x[p][q]
@@ -290,7 +315,7 @@ int main(int argc, char** argv){
     satheaderfile.close();
     
     // satInputFile<<"p cnf "<<numVariables<<" "<<output_strings.size()<<endl;
-
+    
     for(int i =0 ;i<output_strings.size();i++)satInputFile<<output_strings[i];
 
     ofstream dimensionFile ;

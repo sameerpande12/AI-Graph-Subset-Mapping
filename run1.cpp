@@ -193,7 +193,7 @@ int main(int argc, char** argv){
     // }
     
     ofstream satInputFile;
-    satInputFile.open(mode+"_temp.satinput");
+    satInputFile.open(mode+".satinput");
 
     for(int i =0 ;i<Gs.nodes.size();i++){//to ensure one to one mapping
         for(int j = 0;j<Gl.nodes.size();j++){
@@ -263,6 +263,14 @@ int main(int argc, char** argv){
             
     for(int i = 0;i<Gs.nodes.size();i++){
         for(int j = 0;j<Gl.nodes.size();j++){
+            if( (Gs.nodes[i]->indegree > Gl.nodes[j]->indegree) || (Gs.nodes[i]->outdegree > Gl.nodes[j]->outdegree)){
+                stringstream ss;
+                ss<< "-"<< (Gs.nodes[i]->id - 1)* cols +  (Gl.nodes[j]->id -1) + 1  << " 0\n";
+                // output_strings.push_back(ss.str());
+                satInputFile<<ss.str();
+                clauseCount++;
+                continue;
+            }
             for(int p = 0;p<Gs.nodes.size();p++){
                 if(i==p)continue;
                 bool edge_i_p = false;
@@ -318,16 +326,16 @@ int main(int argc, char** argv){
     // satheaderfile<<"p cnf "<<numVariables<<" "<<clauseCount<<endl;
     // satheaderfile.close();
     
-    ofstream outputFile;
-    outputFile.open(mode+".satinput");
-    outputFile<<"p cnf "<<numVariables<<" "<<clauseCount<<endl;
+    // ofstream outputFile;
+    // outputFile.open(mode+".satinput");
+    // outputFile<<"p cnf "<<numVariables<<" "<<clauseCount<<endl;
     
-    ifstream infile(mode+"_temp.satinput");
-    while(getline(infile,line)){
-        outputFile<<line<<endl;
-    }
+    // ifstream infile(mode+"_temp.satinput");
+    // while(getline(infile,line)){
+        // outputFile<<line<<endl;
+    // }
     // for(int i =0 ;i<output_strings.size();i++)outputFile<<output_strings[i];
-    outputFile.close();
+    // outputFile.close();
     ofstream dimensionFile ;
     dimensionFile.open("Dimensions.txt");
     dimensionFile<<rows<<endl;

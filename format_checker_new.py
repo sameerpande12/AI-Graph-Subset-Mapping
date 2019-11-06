@@ -86,9 +86,9 @@ def CheckMap(M,G1,G2):
 			for j in n:
 				if(not (i==j)):
 					if(not((j in G2[i]))==(M[j] in G1[M[i]])):
-						print("Incorrect")
+						print("4")
 						return 4
-		print("Correct")
+		print("0")
 		return 0
 	except KeyError:
 		print("Bad Input: Invalid Node Id")
@@ -98,7 +98,7 @@ def CheckMap(M,G1,G2):
 
 Res=readGraph(gFile)
 Map=readMap(mapFile)
-CheckMap(Map,Res[0],Res[1])
+print(CheckMap(Map,Res[0],Res[1]))
   	# if Map==None:
   	# 	print("Reported UNSAT.")
 	# 	exit(1)

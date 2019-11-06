@@ -1,0 +1,48 @@
+Changes done in the code:
+1. Instead of writing all the clauses in the file at a time using "output_strings" vector, we are writing each clause to a file directly when we encounter it. 
+    This is done because the RAM was getting filled in the previous method
+    just replaced all occurences of 
+
+    a. " output_strings.push_back(ss.str());" -> "//  output_strings.push_back(ss.str());" 
+    b. "//satInputFile<<ss.str();" -> "satInputFile<<ss.str()"
+
+    just uncommented the code. 
+
+2. Checked indegree and outdegree to remove some clauses. The code to measure indegree and outdegree was already present in the original submission as well.
+So the changes 
+"
+if( (Gs.nodes[i]->indegree > Gl.nodes[j]->indegree) || (Gs.nodes[i]->outdegree > Gl.nodes[j]->outdegree)){
+                stringstream ss;
+                ss<< "-"<< (Gs.nodes[i]->id - 1)* cols +  (Gl.nodes[j]->id -1) + 1  << " 0\n";
+                // output_strings.push_back(ss.str());
+                satInputFile<<ss.str();
+                clauseCount++;
+                continue;
+            }
+"
+this code was added.
+
+
+Size of files : 
+
+Drive Link - https://drive.google.com/drive/folders/1pUfXBt1sVJIPS7FmM9SEkZ9GXT-axUHK?usp=sharing
+
+T_L_1.satinput,6765819995 
+T_L_1.satoutput,1088701 
+T_L_1.mapping,1384 
+
+
+
+T_M_2.satinput,4398086970 
+T_M_2.mapping,1777 
+T_M_2.satoutput,884652 
+
+T_M_4.satinput,2887923342 
+T_M_4.satoutput,1069401 
+T_M_4.mapping,2184 
+
+Unsat.satinput,2082147830 
+Unsat.mapping,2
+Unsat.satoutput,6 
+
+We have tested the code on our Laptop with Ubuntu 18.04 with 16 GB RAM and it works fine as will be demonstrated in demo.

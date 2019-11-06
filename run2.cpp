@@ -31,7 +31,7 @@ int main(int argc, char**argv){
         }
     }
     else{
-        cout<<0;
+        cout<<0<<endl;
     }
     return 0;
     // if(!(result.compare("UNSAT")==0)){
